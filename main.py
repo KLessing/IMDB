@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 
 url = "https://www.imdb.com/chart/top"
+title_url = "https://www.imdb.com/title/"
 
 def main():
     response = requests.get(url)
@@ -12,6 +13,7 @@ def main():
     movietags = soup.select("td.titleColumn")
     inner_movietags = soup.select("td.titleColumn a")
     rating_tags = soup.select("td.posterColumn span[name=ir]")
+    title_ids = soup.select("td.ratingColumn div.seen-widget")    
 
     def get_year(movie_tag):
         moviesplit = movie_tag.text.split()
@@ -26,7 +28,9 @@ def main():
 
     while(True):
         idx = random.randrange(0, n_movies)
-        print(f"{titles[idx]} {years[idx]}\nRating: {ratings[idx]:.1f}\nStarring: {actors_list[idx]}")
+        title_id = title_ids[idx]["data-titleid"]
+
+        print(f"{titles[idx]} {years[idx]}\nRating: {ratings[idx]:.1f}\nStarring: {actors_list[idx]}\nUrl: {title_url + title_id}")
 
         user_input = input("Do you want another movie suggestion (y/[n])?")
         if user_input != "y":
