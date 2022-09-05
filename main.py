@@ -5,6 +5,16 @@ from bs4 import BeautifulSoup
 url = "https://www.imdb.com/chart/top"
 title_url = "https://www.imdb.com/title/"
 
+def get_genre(movie_url):
+    response = requests.get(movie_url)
+    html = response.text
+
+    soup = BeautifulSoup(html, "html.parser")
+    content = soup.select("div.ipc-page-content-container span.ipc-chip__text")
+    
+    genres = [tag.text for tag in content]
+    return genres[:-1] #return without last index ("back to top" filler)
+
 def main():
     response = requests.get(url)
     html = response.text
@@ -29,8 +39,9 @@ def main():
     while(True):
         idx = random.randrange(0, n_movies)
         title_id = title_ids[idx]["data-titleid"]
+        movie_url = title_url + title_id
 
-        print(f"{titles[idx]} {years[idx]}\nRating: {ratings[idx]:.1f}\nStarring: {actors_list[idx]}\nUrl: {title_url + title_id}")
+        print(f"{titles[idx]} {years[idx]}\nRating: {ratings[idx]:.1f}\nStarring: {actors_list[idx]}\nGenres: {get_genre(movie_url)}\nUrl: {movie_url}\n")
 
         user_input = input("Do you want another movie suggestion (y/[n])?")
         if user_input != "y":
